@@ -8,6 +8,7 @@
 #include <cassert>
 #include <cstdarg>
 #include <vector>
+#include <string>
 #include "Live555ClientSource.h"
 #include "BasicUsageEnvironment.hh"
 #if defined(HAVE_EPOLL_SCHEDULER)
