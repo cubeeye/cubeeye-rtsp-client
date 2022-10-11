@@ -15,8 +15,8 @@ see <https://learn.microsoft.com/en-us/cpp/build/reference/nmake-reference?view=
 ```bash
 mkdir build && cd build
 cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=./install -DNO_OPENSSL=1 -DLIVE555_BUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Release ..
-make
-make install
+nmake
+nmake install
 ```
 
 For documentation and instructions for building this software,
