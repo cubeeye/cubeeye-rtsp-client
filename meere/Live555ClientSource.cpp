@@ -96,27 +96,22 @@ void Live555ClientSource::RTSPClientSink::afterGettingFrame(void* clientData, un
 	if (nullptr != _sink && nullptr != _sink->mClientSource) {
 		Live555ClientSource::Listener* _listener = _sink->mClientSource->mListener;
 		if (nullptr != _listener) {
-			uint16_t _width = _sink->mMediaSubsession.videoWidth() & 0xFFFF;
-			uint16_t _height = _sink->mMediaSubsession.videoHeight() & 0xFFFF;
+			MediaSubsession* _subsession = &_sink->mMediaSubsession;
+			uint16_t _width = _subsession->videoWidth() & 0xFFFF;
+			uint16_t _height = _subsession->videoHeight() & 0xFFFF;
 			uint64_t _timestamp = presentationTime.tv_sec * 1000000 + presentationTime.tv_usec;
-			std::string _codec(_sink->mMediaSubsession.codecName());
-			std::string _path(_sink->mMediaSubsession.controlPath());
+			std::string _codec(_subsession->codecName());
+			std::string _path(_subsession->controlPath());
 
-			MediaSubsession* _subsession = nullptr;
-			MediaSession& _session = _sink->mMediaSubsession.parentSession();
-			MediaSubsessionIterator _iter(_session);
-			while (nullptr != (_subsession = _iter.next())) {
-				auto _rtp_source = _subsession->rtpSource();
-				if (nullptr != _rtp_source && !_rtp_source->hasBeenSynchronizedUsingRTCP()) {
-					// only H.264/265 packet!
-					auto _npt = _subsession->getNormalPlayTime(presentationTime);
-					_timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(_npt)).count();
+			auto _rtp_source = _subsession->rtpSource();
+			if (nullptr != _rtp_source && !_rtp_source->hasBeenSynchronizedUsingRTCP()) {
+				// only H.264/265 packet!
+				auto _npt = _subsession->getNormalPlayTime(presentationTime);
+				_timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>(_npt)).count();
 
-					// notify timestamp log
-					auto _msg = make_log_message("session(%s) timestamp : %llu", _path.c_str(), _timestamp);
-					_listener->onReceivedLogFromLive555(live555_client_log_level::Debug, _msg);
-					break;
-				}
+				// notify timestamp log
+				auto _msg = make_log_message("session(%s) timestamp : %llu", _path.c_str(), _timestamp);
+				_listener->onReceivedLogFromLive555(live555_client_log_level::Debug, _msg);
 			}
 
 			// notify frame data
